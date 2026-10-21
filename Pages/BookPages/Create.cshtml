@@ -42,6 +42,24 @@
                 </select>
                 <span asp-validation-for="Book.PublisherID" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label class="control-label">Categories</label>
+
+                <div class="table">
+                    @foreach (var cat in Model.AssignedCategoryDataList)
+                    {
+                        <label class="me-3">
+                            <input type="checkbox"
+                                   name="selectedCategories"
+                                   value="@cat.CategoryID"
+                                   checked="@cat.Assigned" />
+                            @cat.Name
+                        </label>
+                    }
+                </div>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

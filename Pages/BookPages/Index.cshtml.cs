@@ -13,14 +13,47 @@ public class IndexModel : PageModel
     {
         _context = context;
     }
+    public BookData BookD { get; set; } = new BookData();
 
-    public IList<Book> Book { get; set; } = default!;
+    public int BookID { get; set; }
 
-    public async Task OnGetAsync()
+    public int CategoryID { get; set; }
+
+
+
+    public async Task OnGetAsync(int? id, int? categoryID)
     {
-        Book = await _context.Book
-        .Include(b => b.Publisher)
-        .Include(b => b.Authors)
-        .ToListAsync();
+        BookD = new BookData();
+
+        BookD.Books = await _context.Book
+            .Include(b => b.Publisher)
+            .Include(b => b.Authors)
+            .Include(b => b.BookCategories)
+                .ThenInclude(bc => bc.Category)
+            .AsNoTracking()
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+
+        if (id != null)
+        {
+            BookID = id.Value;
+
+            Book? book = BookD.Books
+                .FirstOrDefault(b => b.ID == id.Value);
+
+            if (book != null)
+            {
+                BookD.Categories = book.BookCategories?
+                    .Select(bc => bc.Category)
+                    .Where(c => c != null)
+                    .Select(c => c!)
+                    .ToList() ?? new List<Category>();
+            }
+        }
+
+        if (categoryID != null)
+        {
+            CategoryID = categoryID.Value;
+        }
     }
 }

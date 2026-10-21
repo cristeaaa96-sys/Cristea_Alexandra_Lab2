@@ -1,38 +1,39 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Cristea_Alexandra_Lab2.Models;
 
-namespace Cristea_Alexandra_Lab2.Pages.AuthorsPages;
-
-public class CreateModel : PageModel
+namespace Cristea_Alexandra_Lab2.Pages.AuthorsPages
 {
-    private readonly Cristea_Alexandra_Lab2Context _context;
-
-    public CreateModel(Cristea_Alexandra_Lab2Context context)
+    public class CreateModel : PageModel
     {
-        _context = context;
-    }
+        private readonly Cristea_Alexandra_Lab2Context _context;
 
-    public IActionResult OnGet()
-    {
-        return Page();
-    }
+        public CreateModel(Cristea_Alexandra_Lab2Context context)
+        {
+            _context = context;
+        }
 
-    [BindProperty]
-    public Authors Authors { get; set; } = default!;
+        [BindProperty]
+        public Authors Authors { get; set; } = default!;
 
-    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD.
-    public async Task<IActionResult> OnPostAsync()
-    {
-        if (!ModelState.IsValid)
+        public IActionResult OnGet()
         {
             return Page();
         }
 
-        _context.Authors.Add(Authors);
-        await _context.SaveChangesAsync();
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-        return RedirectToPage("./Index");
+            _context.Authors.Add(Authors);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
+        }
     }
 }
+
