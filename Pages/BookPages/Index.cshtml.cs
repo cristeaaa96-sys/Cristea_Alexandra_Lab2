@@ -13,17 +13,36 @@ public class IndexModel : PageModel
     {
         _context = context;
     }
+
     public BookData BookD { get; set; } = new BookData();
 
     public int BookID { get; set; }
 
     public int CategoryID { get; set; }
 
+    public string TitleSort { get; set; } = string.Empty;
 
+    public string AuthorSort { get; set; } = string.Empty;
 
-    public async Task OnGetAsync(int? id, int? categoryID)
+    public string CurrentFilter { get; set; } = string.Empty;
+
+    public async Task OnGetAsync(
+        int? id,
+        int? categoryID,
+        string? sortOrder,
+        string? searchString)
     {
         BookD = new BookData();
+
+        TitleSort = string.IsNullOrEmpty(sortOrder)
+            ? "title_desc"
+            : "";
+
+        AuthorSort = sortOrder == "author"
+            ? "author_desc"
+            : "author";
+
+        CurrentFilter = searchString ?? string.Empty;
 
         BookD.Books = await _context.Book
             .Include(b => b.Publisher)
@@ -34,6 +53,28 @@ public class IndexModel : PageModel
             .OrderBy(b => b.Title)
             .ToListAsync();
 
+        // Cautam cartile dupa titlu sau numele autorului
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            BookD.Books = BookD.Books
+                .Where(b =>
+                    (b.Title != null &&
+                     b.Title.Contains(
+                         searchString,
+                         StringComparison.OrdinalIgnoreCase))
+                    ||
+                    (b.Authors != null &&
+                     ((b.Authors.FirstName ?? "").Contains(
+                         searchString,
+                         StringComparison.OrdinalIgnoreCase)
+                      ||
+                      (b.Authors.LastName ?? "").Contains(
+                         searchString,
+                         StringComparison.OrdinalIgnoreCase))))
+                .ToList();
+        }
+
+        // Selectarea unei carti
         if (id != null)
         {
             BookID = id.Value;
@@ -54,6 +95,30 @@ public class IndexModel : PageModel
         if (categoryID != null)
         {
             CategoryID = categoryID.Value;
+        }
+
+        // Sortarea cartilor
+        switch (sortOrder)
+        {
+            case "title_desc":
+                BookD.Books = BookD.Books
+                    .OrderByDescending(b => b.Title);
+                break;
+
+            case "author_desc":
+                BookD.Books = BookD.Books
+                    .OrderByDescending(b => b.Authors?.FullName);
+                break;
+
+            case "author":
+                BookD.Books = BookD.Books
+                    .OrderBy(b => b.Authors?.FullName);
+                break;
+
+            default:
+                BookD.Books = BookD.Books
+                    .OrderBy(b => b.Title);
+                break;
         }
     }
 }

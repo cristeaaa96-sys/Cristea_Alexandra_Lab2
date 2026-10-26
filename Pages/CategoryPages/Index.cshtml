@@ -1,42 +1,82 @@
-@page
+@page "{id:int?}"
 @model Cristea_Alexandra_Lab2.Pages.CategoryPages.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
 }
 
-<h1>Index</h1>
+<h1>Categories</h1>
 
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Category[0].CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category[0].BookCategories)
-            </th>
+            <th>CategoryName</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
-@foreach (var item in Model.Category) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.BookCategories)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Category)
+        {
+            string selectedRow =
+                item.ID == Model.SelectedCategoryID
+                    ? "table-success"
+                    : "";
+
+            <tr class="@selectedRow">
+                <td>
+                    @item.CategoryName
+                </td>
+
+                <td>
+                    <a asp-page="./Index"
+                       asp-route-id="@item.ID">Select</a> |
+
+                    <a asp-page="./Edit"
+                       asp-route-id="@item.ID">Edit</a> |
+
+                    <a asp-page="./Details"
+                       asp-route-id="@item.ID">Details</a> |
+
+                    <a asp-page="./Delete"
+                       asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@if (Model.SelectedCategoryID != null)
+{
+    <h3>Books in Selected Category</h3>
+
+    @if (Model.SelectedBooks.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Book Title</th>
+                    <th>Author</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var book in Model.SelectedBooks)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@book.Authors?.FullName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Nu exista carti asociate acestei categorii.</p>
+    }
+}
