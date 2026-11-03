@@ -1,3 +1,4 @@
+using Cristea_Alexandra_Lab2.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class Cristea_Alexandra_Lab2Context(
@@ -13,4 +14,9 @@ public class Cristea_Alexandra_Lab2Context(
     public DbSet<Cristea_Alexandra_Lab2.Models.Category> Category { get; set; } = default!;
 
     public DbSet<Cristea_Alexandra_Lab2.Models.BookCategory> BookCategory { get; set; } = default!;
+
+    public DbSet<Member> Member { get; set; } = default!;
+
+    public DbSet<Borrowing> Borrowing { get; set; } = default!;
+
 }
