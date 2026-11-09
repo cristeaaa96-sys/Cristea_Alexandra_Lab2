@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Cristea_Alexandra_Lab2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cristea_Alexandra_Lab2.Pages.BookPages;
 
+[Authorize(Roles = "Admin")]
 public class DeleteModel : PageModel
 {
     private readonly Cristea_Alexandra_Lab2Context _context;
